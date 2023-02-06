@@ -4,7 +4,7 @@
     <div class="p-4 mt-4 row">
         <div class="row pb-2">
             <h2 class="test-primary mb-4">
-                Edit Product
+                @(Model.Product.Id!=0?"Update":"Create") Product
             </h2>
             <div class="mb-3">
                 <label asp-for="Product.Title"></label>
@@ -48,7 +48,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Product.ImageUrl"></label>
-                <input type="file" asp-for="Product.ImageUrl" class="form-control" />
+                <input type="file" id="uploadBox" asp-for="Product.ImageUrl" class="form-control" />
             </div>
             <div class="mb-3 col-6">
                 <label asp-for="Product.CategoryId"></label>
@@ -64,7 +64,11 @@
                 </select>
                 <span asp-validation-for="Product.CoverTypeId" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary me-1" style="width: 200px">Update</button>
+            @if(Model.Product.Id != 0) {
+                <button type="submit" class="btn btn-primary me-1" style="width: 200px">Update</button>
+            } else {
+                <button type="submit" onclick="return validateInput()" class="btn btn-primary me-1" style="width: 200px">Create</button>
+            }
             <a asp-controller="Product" asp-action="Index" class="btn btn-secondary" style="width: 200px">Back to List</a>
         </div>
     </div>
@@ -72,6 +76,7 @@
 
 @section Scripts {
     @{
-        <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial" />
     }
-    }
+    <script type="text/javascript" src="~/js/sweetalerts.js"></script>
+}
