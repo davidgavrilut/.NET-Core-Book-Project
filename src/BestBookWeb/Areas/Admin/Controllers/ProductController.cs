@@ -20,8 +20,7 @@ namespace BestBook.Controllers {
         }
 
         public IActionResult Index() {
-            IEnumerable<Product> objProductList = _unitOfWork.Product.GetAll();
-            return View(objProductList);
+            return View();
         }
 
         public IActionResult Upsert(int? id) {
@@ -94,7 +93,7 @@ namespace BestBook.Controllers {
                 data = productList
             });
         }
-
+        
         #endregion
 
     }
