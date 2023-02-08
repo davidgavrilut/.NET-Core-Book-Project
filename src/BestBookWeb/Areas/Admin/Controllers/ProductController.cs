@@ -86,5 +86,16 @@ namespace BestBook.Controllers {
                 return NotFound();
             }
         }
+
+        #region API CALLS
+        public IActionResult GetAll() {
+            var productList = _unitOfWork.Product.GetAll();
+            return Json(new {
+                data = productList
+            });
+        }
+
+        #endregion
+
     }
 }
