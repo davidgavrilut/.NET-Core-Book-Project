@@ -12,15 +12,18 @@ namespace BestBook.Controllers {
     public class ProductController : Controller {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment) {
+            _unitOfWork = unitOfWork; 
+            _hostEnvironment = hostEnvironment;
+        }
 
         public IActionResult Index() {
             IEnumerable<Product> objProductList = _unitOfWork.Product.GetAll();
             return View(objProductList);
         }
 
-        // GET
         public IActionResult Upsert(int? id) {
             ProductViewModel productViewModel = new() {
                 Product = new(),
@@ -34,9 +37,6 @@ namespace BestBook.Controllers {
                 })
             };
             if (id == null || id == 0) {
-                // create product
-                //ViewBag.CategoryList = CategoryList;
-                //ViewData["CoverTypeList"] = CoverTypeList;
                 return View(productViewModel);
             } else {
                 // update product
@@ -44,20 +44,28 @@ namespace BestBook.Controllers {
             return View(productViewModel);
         }
 
-        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(ProductViewModel obj, IFormFile file) {
-            if (ModelState.IsValid) {
-                //_unitOfWork.Product.Update(obj);
+        public IActionResult Upsert(ProductViewModel obj, IFormFile? file) {
+            if (ModelState.IsValid) {   
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                if (file != null) {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(wwwRootPath, @"img\products");
+                    var extension = Path.GetExtension(file.FileName);
+                    using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create)) {
+                        file.CopyTo(fileStreams);
+                    }
+                    obj.Product.ImageUrl = @"\images\products\" + fileName + extension;
+                }
+                _unitOfWork.Product.Add(obj.Product);
                 _unitOfWork.Save();
-                TempData["success"] = "Product updated successfully";
+                TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index");
             }
             return View(obj);
         }
 
-        // GET
         public IActionResult Delete(int? id) {
             if (id == null || id == 0) return NotFound();
             var productFromDb = _unitOfWork.Product.GetFirstOrDefault(e => e.Id == id);
@@ -65,7 +73,6 @@ namespace BestBook.Controllers {
             return View(productFromDb);
         }
 
-        // POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePOST(int? id) {

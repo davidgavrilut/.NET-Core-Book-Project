@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -33,16 +34,19 @@ namespace BestBook.Models {
         [Range(1, 10000)]
         public double Price100 { get; set; }
         [DisplayName("Image URL")]
+        [ValidateNever]
         public string ImageUrl { get; set; }
+        [Required]
         [DisplayName("Category")]
         public int CategoryId { get; set; }
-        [Required]
         [ForeignKey("CategoryId")]
+        [ValidateNever]
         public Category Category { get; set; }
+        [Required]
         [DisplayName("Cover Type")]
         public int CoverTypeId { get; set; }
-        [Required]
         [ForeignKey("CoverTypeId")]
+        [ValidateNever]
         public CoverType CoverType { get; set; }
     }
 }
