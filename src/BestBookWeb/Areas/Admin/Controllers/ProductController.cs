@@ -88,13 +88,11 @@ namespace BestBook.Controllers {
 
         #region API CALLS
         public IActionResult GetAll() {
-            var productList = _unitOfWork.Product.GetAll();
+            var productList = _unitOfWork.Product.GetAll(includeProperties: "Category");
             return Json(new {
                 data = productList
             });
         }
-        
         #endregion
-
     }
 }
