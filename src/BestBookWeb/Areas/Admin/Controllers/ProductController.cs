@@ -38,9 +38,9 @@ namespace BestBook.Controllers {
             if (id == null || id == 0) {
                 return View(productViewModel);
             } else {
-                // update product
+                productViewModel.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+                return View(productViewModel);
             }
-            return View(productViewModel);
         }
 
         [HttpPost]

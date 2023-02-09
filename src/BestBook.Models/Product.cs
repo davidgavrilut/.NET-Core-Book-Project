@@ -24,13 +24,14 @@ namespace BestBook.Models {
         public double ListPrice { get; set; }
         [Required]
         [Range(1, 10000)]
+        [DisplayName("Price for 1-50")]
         public double Price { get; set; }
         [Required]
-        [DisplayName("Price (50)")]
+        [DisplayName("Price for 51-100")]
         [Range(1, 10000)]
         public double Price50 { get; set; }
         [Required]
-        [DisplayName("Price (100)")]
+        [DisplayName("Price for 100+")]
         [Range(1, 10000)]
         public double Price100 { get; set; }
         [DisplayName("Image URL")]
