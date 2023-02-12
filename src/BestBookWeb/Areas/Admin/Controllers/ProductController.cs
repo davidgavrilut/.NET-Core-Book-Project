@@ -97,12 +97,10 @@ namespace BestBook.Controllers {
                     message = "Error while deleting"
                 });
             }
-                
             var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.ImageUrl.TrimStart('\\'));
             if (System.IO.File.Exists(oldImagePath)) {
                 System.IO.File.Delete(oldImagePath);
             }
-
             _unitOfWork.Product.Remove(obj);
             _unitOfWork.Save();
             return Json(new {
