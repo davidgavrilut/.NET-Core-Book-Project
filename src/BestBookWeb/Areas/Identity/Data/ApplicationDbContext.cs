@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BestBook.Data;
+namespace BestBookWeb;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
