@@ -62,6 +62,12 @@
                     <option disabled selected>- Select Role -</option>
                 </select>
             </div>
+            <div>
+                <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select mb-3">
+                    <option disabled selected>- Select Company -</option>
+                </select>
+            </div>
+
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>

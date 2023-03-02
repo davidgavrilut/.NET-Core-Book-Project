@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using BestBook.DataAccess.Repository.IRepository;
 using BestBook.Models;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -35,13 +36,15 @@ namespace BestBookWeb.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender
+            IEmailSender emailSender,
+            IUnitOfWork unitOfWork
 ,
             RoleManager<IdentityRole> roleManager) {
             _userManager = userManager;
@@ -51,6 +54,7 @@ namespace BestBookWeb.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -116,10 +120,14 @@ namespace BestBookWeb.Areas.Identity.Pages.Account
             [DisplayName("Phone Number")]
             public string? PhoneNumber { get; set; }
             public string? Role { get; set; }
+            public int? CompanyId { get; set; }
 
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
+            [ValidateNever]
+            [DisplayName("Company List")]
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
         }
 
 
@@ -137,6 +145,10 @@ namespace BestBookWeb.Areas.Identity.Pages.Account
                 RoleList = _roleManager.Roles.Select(u => u.Name).Select(i => new SelectListItem {
                     Text = i,
                     Value = i
+                }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(i => new SelectListItem {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
                 })
             };
         }
