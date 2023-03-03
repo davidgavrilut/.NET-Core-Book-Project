@@ -1,8 +1,10 @@
 ﻿using BestBook.DataAccess.Repository.IRepository;
 using BestBook.Models;
 using BestBook.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BestBook.Areas.Customer.Controllers
 {
@@ -24,12 +26,32 @@ namespace BestBook.Areas.Customer.Controllers
             return View(products);
         }
 
-        public IActionResult Details(int id) {
+        public IActionResult Details(int productId) {
             ShoppingCart cartObj = new() {
                 Count = 1,
-                Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id, includeProperties: "Category,CoverType")
+                ProductId = productId,
+                Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == productId, includeProperties: "Category,CoverType")
             };
             return View(cartObj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart) {
+            // Get the user claims object
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            // Access logged user id (nameidentifier)
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            // add id to ApplicationUserId
+            shoppingCart.ApplicationUserId = claim.Value;
+
+            // add the object from model to uow
+            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            _unitOfWork.Save();
+
+            // return to homepage
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()

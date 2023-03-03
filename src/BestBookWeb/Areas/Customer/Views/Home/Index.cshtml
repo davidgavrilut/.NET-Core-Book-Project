@@ -15,7 +15,7 @@
                             <p>List Price: <strike class="fw-bold">$@product.ListPrice.ToString("0.00")</strike></p>
                             <p>As Low As: <span class="fw-bold">$@product.Price100.ToString("0.00")</span></p>
                             <div class="mt-4">
-                                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary form-control fw-bold">
+                                <a asp-action="Details" asp-route-productId="@product.Id" class="btn btn-primary form-control fw-bold">
                                     Details
                                 </a>
                             </div>
