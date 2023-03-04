@@ -46,11 +46,13 @@ namespace BestBook.Areas.Customer.Controllers
             // add id to ApplicationUserId
             shoppingCart.ApplicationUserId = claim.Value;
 
-            // add the object from model to uow
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.GetFirstOrDefault(i => i.ApplicationUserId == claim.Value && i.ProductId == shoppingCart.ProductId);
+            if (cartFromDb == null) {
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            } else {
+               _unitOfWork.ShoppingCart.IncrementCount(cartFromDb, shoppingCart.Count);
+            }
             _unitOfWork.Save();
-
-            // return to homepage
             return RedirectToAction(nameof(Index));
         }
 
