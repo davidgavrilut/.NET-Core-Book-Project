@@ -28,6 +28,21 @@ public class CartController : Controller {
         }
 
         return View(ShoppingCartViewModel);
+    }    
+    public IActionResult Summary() {
+        //var claimsIdentity = (ClaimsIdentity)User.Identity;
+        //var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+        //ShoppingCartViewModel = new ShoppingCartViewModel() {
+        //    ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value, includeProperties: "Product")
+        //};
+
+        //foreach(var cart in ShoppingCartViewModel.ListCart) {
+        //    cart.Price = GetPriceBasedOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+        //    ShoppingCartViewModel.CartTotal += cart.Price * cart.Count;
+        //}
+
+        return View();
     }
 
     public IActionResult Plus(int cartId) {
