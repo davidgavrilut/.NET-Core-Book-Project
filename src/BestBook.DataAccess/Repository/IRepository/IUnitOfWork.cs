@@ -12,6 +12,8 @@ namespace BestBook.DataAccess.Repository.IRepository {
         ICompanyRepository Company { get; }
         IShoppingCartRepository ShoppingCart { get; }
         IApplicationUserRepository ApplicationUser { get; }
+        IOrderDetailsRepository OrderDetails { get; }
+        IOrderHeaderRepository OrderHeader { get; }
         void Save();
     }
 }

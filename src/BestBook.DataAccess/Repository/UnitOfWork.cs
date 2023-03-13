@@ -17,6 +17,9 @@ namespace BestBook.DataAccess.Repository {
             Company = new CompanyRepository(_db);
             ApplicationUser = new ApplicationUserRepository(_db);
             ShoppingCart = new ShoppingCartRepository(_db);
+            OrderDetails = new OrderDetailsRepository(_db);
+            OrderHeader = new OrderHeaderRepository(_db);
+
         }
         public ICategoryRepository Category { get; private set; }
         public ICoverTypeRepository CoverType { get; private set; }
@@ -24,6 +27,8 @@ namespace BestBook.DataAccess.Repository {
         public ICompanyRepository Company { get; private set; }
         public IShoppingCartRepository ShoppingCart { get; private set; }
         public IApplicationUserRepository ApplicationUser { get; private set; }
+        public IOrderDetailsRepository OrderDetails { get; private set; }
+        public IOrderHeaderRepository OrderHeader { get; private set; }
 
         public void Save() {
             _db.SaveChanges();
