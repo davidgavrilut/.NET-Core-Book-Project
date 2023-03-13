@@ -1,4 +1,5 @@
 ﻿using BestBook.DataAccess.Repository.IRepository;
+using BestBook.Models;
 using BestBook.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ public class CartController : Controller {
             ShoppingCartViewModel.OrderHeader.OrderTotal += cart.Price * cart.Count;
         }
 
-        return View();
+        return View(ShoppingCartViewModel);
     }
 
     public IActionResult Plus(int cartId) {

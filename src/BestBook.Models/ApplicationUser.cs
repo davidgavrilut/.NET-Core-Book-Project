@@ -14,11 +14,15 @@ namespace BestBook.Models {
         [Required]
         public string Name { get; set; }
         [DisplayName("Address")]
-        public string? StreetAddress { get; set; }
-        public string? City { get; set; }
-        public string? State { get; set; }
+        [Required]
+        public string StreetAddress { get; set; }
+        [Required]
+        public string City { get; set; }
+        [Required]
+        public string State { get; set; }
         [DisplayName("Postal Code")]
-        public string? PostalCode { get; set; }
+        [Required]
+        public string PostalCode { get; set; }
         public int? CompanyId { get; set; }
         [ForeignKey("CompanyId")]
         [ValidateNever]
