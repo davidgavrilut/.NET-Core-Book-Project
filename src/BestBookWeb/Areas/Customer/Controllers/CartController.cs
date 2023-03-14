@@ -4,6 +4,7 @@ using BestBook.Models.ViewModels;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Stripe.Checkout;
 using System.Security.Claims;
 
@@ -118,6 +119,8 @@ public class CartController : Controller {
 
         var service = new SessionService();
         Session session = service.Create(options);
+        _unitOfWork.OrderHeader.UpdateStripePaymentId(ShoppingCartViewModel.OrderHeader.Id, session.Id, session.PaymentIntentId);
+        _unitOfWork.Save();
 
         Response.Headers.Add("Location", session.Url);
         return new StatusCodeResult(303);
@@ -126,6 +129,21 @@ public class CartController : Controller {
         //_unitOfWork.ShoppingCart.RemoveRange(ShoppingCartViewModel.ListCart);
         //_unitOfWork.Save();
         //return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult OrderConfirmation(int id) {
+        OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+        var service = new SessionService();
+        Session session = service.Get(orderHeader.SessionId);
+        // check stripe status
+        if(session.PaymentStatus.ToLower() == "paid") {
+            _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
+            _unitOfWork.Save();
+        }
+        List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
+        _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+        _unitOfWork.Save();
+        return View(id);
     }
 
     public IActionResult Plus(int cartId) {
