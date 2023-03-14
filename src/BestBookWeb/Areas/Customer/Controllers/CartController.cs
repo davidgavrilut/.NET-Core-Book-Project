@@ -11,6 +11,7 @@ namespace BestBookWeb.Areas.Customer.Controllers;
 [Authorize]
 public class CartController : Controller {
     private readonly IUnitOfWork _unitOfWork;
+    [BindProperty]
     public ShoppingCartViewModel ShoppingCartViewModel { get; set; }
     public int OrderTotal { get; set; }
     public CartController(IUnitOfWork unitOfWork) {
@@ -66,11 +67,6 @@ public class CartController : Controller {
         var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
         ShoppingCartViewModel.ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value, includeProperties: "Product");
-
-        ShoppingCartViewModel = new ShoppingCartViewModel() {
-            ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value, includeProperties: "Product"),
-            OrderHeader = new()
-        };
 
         ShoppingCartViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
         ShoppingCartViewModel.OrderHeader.OrderStatus = SD.StatusPending;

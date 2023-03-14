@@ -1,4 +1,6 @@
 ﻿@model BestBook.Models.ViewModels.ShoppingCartViewModel
+@using Microsoft.Extensions.Options
+@inject IOptions<BestBook.Utility.StripeSettings> Stripe
 
 <form method="post">
 	<br />
