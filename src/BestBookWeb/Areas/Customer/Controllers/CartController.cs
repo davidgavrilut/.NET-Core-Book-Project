@@ -4,6 +4,7 @@ using BestBook.Models.ViewModels;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace BestBookWeb.Areas.Customer.Controllers;
@@ -91,9 +92,40 @@ public class CartController : Controller {
             _unitOfWork.Save();
         }
 
-        _unitOfWork.ShoppingCart.RemoveRange(ShoppingCartViewModel.ListCart);
-        _unitOfWork.Save();
-        return RedirectToAction("Index", "Home");
+        // Stripe Settings
+        // temporary domain, will get from IWebHostEnvironment
+        var domain = "https://localhost:44380/";
+        var options = new SessionCreateOptions {
+            LineItems = new List<SessionLineItemOptions>(),
+            Mode = "payment",
+            SuccessUrl = domain+$"customer/cart/OrderConfirmation?id={ShoppingCartViewModel.OrderHeader.Id}",
+            CancelUrl = domain+$"customer/cart/index",
+        };
+
+        foreach (var item in ShoppingCartViewModel.ListCart) {
+            var sessionLineItem = new SessionLineItemOptions {
+                PriceData = new SessionLineItemPriceDataOptions {
+                    UnitAmount = (long)(item.Price * 100),
+                    Currency = "usd",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions {
+                        Name = item.Product.Title,
+                    },
+                },
+                Quantity = item.Count,
+            };
+            options.LineItems.Add(sessionLineItem);
+        }
+
+        var service = new SessionService();
+        Session session = service.Create(options);
+
+        Response.Headers.Add("Location", session.Url);
+        return new StatusCodeResult(303);
+
+
+        //_unitOfWork.ShoppingCart.RemoveRange(ShoppingCartViewModel.ListCart);
+        //_unitOfWork.Save();
+        //return RedirectToAction("Index", "Home");
     }
 
     public IActionResult Plus(int cartId) {
