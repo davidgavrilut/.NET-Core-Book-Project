@@ -1,6 +1,7 @@
 ﻿using BestBook.DataAccess.Repository.IRepository;
 using BestBook.Models;
 using BestBook.Models.ViewModels;
+using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -55,6 +56,48 @@ public class CartController : Controller {
         }
 
         return View(ShoppingCartViewModel);
+    }
+
+    [HttpPost]
+    [ActionName("Summary")]
+    [ValidateAntiForgeryToken]
+    public IActionResult SummaryPOST() {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+        ShoppingCartViewModel.ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value, includeProperties: "Product");
+
+        ShoppingCartViewModel = new ShoppingCartViewModel() {
+            ListCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == claim.Value, includeProperties: "Product"),
+            OrderHeader = new()
+        };
+
+        ShoppingCartViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+        ShoppingCartViewModel.OrderHeader.OrderStatus = SD.StatusPending;
+        ShoppingCartViewModel.OrderHeader.OrderDate = System.DateTime.Now;    
+        ShoppingCartViewModel.OrderHeader.ApplicationUserId = claim.Value;
+
+        foreach (var cart in ShoppingCartViewModel.ListCart) {
+            cart.Price = GetPriceBasedOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+            ShoppingCartViewModel.OrderHeader.OrderTotal += cart.Price * cart.Count;
+        }
+        _unitOfWork.OrderHeader.Add(ShoppingCartViewModel.OrderHeader);
+        _unitOfWork.Save();
+
+        foreach (var cart in ShoppingCartViewModel.ListCart) {
+            OrderDetails orderDetails = new() {
+                ProductId = cart.ProductId,
+                OrderId = ShoppingCartViewModel.OrderHeader.Id,
+                Price = cart.Price,
+                Count = cart.Count
+            };
+            _unitOfWork.OrderDetails.Add(orderDetails);
+            _unitOfWork.Save();
+        }
+
+        _unitOfWork.ShoppingCart.RemoveRange(ShoppingCartViewModel.ListCart);
+        _unitOfWork.Save();
+        return RedirectToAction("Index", "Home");
     }
 
     public IActionResult Plus(int cartId) {
