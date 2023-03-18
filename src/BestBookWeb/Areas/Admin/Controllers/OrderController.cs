@@ -1,5 +1,6 @@
 ﻿using BestBook.DataAccess.Repository.IRepository;
 using BestBook.Models;
+using BestBook.Models.ViewModels;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,21 @@ namespace BestBookWeb.Areas.Admin.Controllers;
 [Authorize]
 public class OrderController : Controller {
     private readonly IUnitOfWork _unitOfWork;
+    public OrderViewModel OrderViewModel { get; set; }
     public OrderController(IUnitOfWork unitOfWork) {
         _unitOfWork = unitOfWork;
     }
     public IActionResult Index() {
         return View();
     }
+    public IActionResult Details(int orderId) {
+        OrderViewModel = new OrderViewModel() {
+            OrderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(e => e.Id == orderId, includeProperties: "ApplicationUser"),
+            OrderDetails = _unitOfWork.OrderDetails.GetAll(e => e.Id == orderId, includeProperties: "Product")
+        };
+        return View(OrderViewModel);
+    }
+
     #region API CALLS
     public IActionResult GetAll() {
         IEnumerable<OrderHeader> orderHeaders;
