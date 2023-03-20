@@ -31,6 +31,7 @@ public class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderReposi
     public void UpdateStripePaymentId(int id, string sessionId, string paymentIntentId) {
         var orderFromDb = _db.OrderHeaders.FirstOrDefault(x => x.Id == id);
         if (orderFromDb != null) {
+            orderFromDb.PaymentDate = DateTime.Now;
             orderFromDb.SessionId = sessionId;
             orderFromDb.PaymentItentId = paymentIntentId;
         }
