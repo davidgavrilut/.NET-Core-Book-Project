@@ -26,6 +26,28 @@ public class OrderController : Controller {
         return View(OrderViewModel);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateOrderDetails() {
+        var orderHeaderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == OrderViewModel.OrderHeader.Id, tracked: false);
+        orderHeaderFromDb.Name = OrderViewModel.OrderHeader.Name;
+        orderHeaderFromDb.PhoneNumber = OrderViewModel.OrderHeader.PhoneNumber;
+        orderHeaderFromDb.StreetAddress = OrderViewModel.OrderHeader.StreetAddress;
+        orderHeaderFromDb.City = OrderViewModel.OrderHeader.City;
+        orderHeaderFromDb.State = OrderViewModel.OrderHeader.State;
+        orderHeaderFromDb.PostalCode = OrderViewModel.OrderHeader.PostalCode;
+        if (OrderViewModel.OrderHeader.Carrier != null) {
+            orderHeaderFromDb.Carrier = OrderViewModel.OrderHeader.Carrier;
+        }
+        if (OrderViewModel.OrderHeader.TrackingNumber != null) {
+
+        }
+        _unitOfWork.OrderHeader.Update(orderHeaderFromDb);
+        _unitOfWork.Save();
+        TempData["success"] = "Order details updated successfully";
+        return RedirectToAction("Details", "Order", new { orderId = orderHeaderFromDb.Id });
+    }
+
     #region API CALLS
     public IActionResult GetAll() {
         IEnumerable<OrderHeader> orderHeaders;
