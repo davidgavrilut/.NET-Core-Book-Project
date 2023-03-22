@@ -11,6 +11,7 @@ namespace BestBookWeb.Areas.Admin.Controllers;
 [Authorize]
 public class OrderController : Controller {
     private readonly IUnitOfWork _unitOfWork;
+    [BindProperty]
     public OrderViewModel OrderViewModel { get; set; }
     public OrderController(IUnitOfWork unitOfWork) {
         _unitOfWork = unitOfWork;
@@ -46,6 +47,31 @@ public class OrderController : Controller {
         _unitOfWork.Save();
         TempData["success"] = "Order details updated successfully";
         return RedirectToAction("Details", "Order", new { orderId = orderHeaderFromDb.Id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult StartProcessing() {
+        // update status of id coming from the view
+        _unitOfWork.OrderHeader.UpdateStatus(OrderViewModel.OrderHeader.Id, SD.StatusInProcess);    
+        _unitOfWork.Save();
+        TempData["success"] = "Order status updated successfully";
+        return RedirectToAction("Details", "Order", new { orderId = OrderViewModel.OrderHeader.Id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ShipOrder() {
+        var orderHeaderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == OrderViewModel.OrderHeader.Id, tracked: false);
+        orderHeaderFromDb.TrackingNumber = OrderViewModel.OrderHeader.TrackingNumber;
+        orderHeaderFromDb.Carrier = OrderViewModel.OrderHeader.Carrier;
+        orderHeaderFromDb.OrderStatus = SD.StatusShipped;
+        orderHeaderFromDb.ShippingDate = DateTime.Now;
+        // update status of id coming from the view
+        _unitOfWork.OrderHeader.Update(orderHeaderFromDb);
+        _unitOfWork.Save();
+        TempData["success"] = "Order shipped updated successfully";
+        return RedirectToAction("Details", "Order", new { orderId = OrderViewModel.OrderHeader.Id });
     }
 
     #region API CALLS
