@@ -3,6 +3,7 @@ using BestBook.Models;
 using BestBook.Models.ViewModels;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
@@ -34,7 +35,7 @@ public class CartController : Controller {
         }
 
         return View(ShoppingCartViewModel);
-    }    
+    }
     public IActionResult Summary() {
         var claimsIdentity = (ClaimsIdentity)User.Identity;
         var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -94,7 +95,6 @@ public class CartController : Controller {
         }
 
         // Stripe Settings
-        // temporary domain, will get from IWebHostEnvironment
         var domain = "https://localhost:44380/";
         var options = new SessionCreateOptions {
             LineItems = new List<SessionLineItemOptions>(),
@@ -124,11 +124,6 @@ public class CartController : Controller {
 
         Response.Headers.Add("Location", session.Url);
         return new StatusCodeResult(303);
-
-
-        //_unitOfWork.ShoppingCart.RemoveRange(ShoppingCartViewModel.ListCart);
-        //_unitOfWork.Save();
-        //return RedirectToAction("Index", "Home");
     }
 
     public IActionResult OrderConfirmation(int id) {
@@ -137,6 +132,7 @@ public class CartController : Controller {
         Session session = service.Get(orderHeader.SessionId);
         // check stripe status
         if(session.PaymentStatus.ToLower() == "paid") {
+            _unitOfWork.OrderHeader.UpdateStripePaymentId(id, orderHeader.SessionId, session.PaymentIntentId);
             _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
             _unitOfWork.Save();
         }
