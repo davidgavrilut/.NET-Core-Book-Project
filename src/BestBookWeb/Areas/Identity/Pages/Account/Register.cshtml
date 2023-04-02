@@ -1,5 +1,6 @@
 ﻿@page
 @model RegisterModel
+@using BestBook.Utility
 @{
     ViewData["Title"] = "Register";
 }
@@ -57,16 +58,20 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control mb-3" aria-required="true" />
                 <label asp-for="Input.ConfirmPassword"></label>
             </div>
-            <div>
-                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select mb-3">
-                    <option disabled selected>- Select Role -</option>
-                </select>
-            </div>
-            <div>
-                <select asp-for="Input.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select d-none mb-3">
-                    <option disabled selected>- Select Company -</option>
-                </select>
-            </div>
+            @if (User.IsInRole(SD.Role_Admin)) {
+                <div class="form-floating py-2 col-6">
+                    <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class=form-select>
+                        <option disabled selected>-Select Role-</option>
+                    </select>
+
+                </div>
+                <div class="form-floating py-2 col-6">
+                    <select asp-for="Input.CompanyId" style="display:none;" asp-items="@Model.Input.CompanyList" class=form-select>
+                        <option disabled selected>-Select Company-</option>
+                    </select>
+
+                </div>
+            }
 
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
