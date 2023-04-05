@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BestBook.Models\BestBook.Models.csproj" />
+    <ProjectReference Include="..\BestBook.Utility\BestBook.Utility.csproj" />
   </ItemGroup>
 
 </Project>
