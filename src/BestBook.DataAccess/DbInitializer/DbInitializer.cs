@@ -45,17 +45,17 @@ public class DbInitializer : IDbInitializer {
             //if roles are not created, then we will create admin user as well
 
             _userManager.CreateAsync(new ApplicationUser {
-                UserName = "davidgavrilut1@gmail.com",
-                Email = "davidgavrilut1@gmail.com",
-                Name = "David Gavrilut",
+                UserName = "test-demo@email.com",
+                Email = "test-demo@email.com",
+                Name = "John Smith",
                 PhoneNumber = "1112223333",
                 StreetAddress = "test 123 Ave",
                 State = "IL",
                 PostalCode = "23422",
                 City = "Chicago"
-            }, "Admin123*").GetAwaiter().GetResult();
+            }, "Test.123").GetAwaiter().GetResult();
 
-            ApplicationUser user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == "davidgavrilut1@gmail.com");
+            ApplicationUser user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == "test-demo@email.com");
 
             _userManager.AddToRoleAsync(user, SD.Role_Admin).GetAwaiter().GetResult();
 
