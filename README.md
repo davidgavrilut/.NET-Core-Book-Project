@@ -4,7 +4,8 @@ Project is inspired from the following course: https://eylearning.udemy.com/cour
 
 It is public on Azure and can be accessed at: https://bestbook.azurewebsites.net/
 
-- Some functionalities are still in testing (Facebook login following Azure deploy)
+Some functionalities are still in testing (Facebook login following Azure deploy)
+Unit testing will also be implemented, plus some other functionalities
 
 You can log in with the following demo user (no admin rights):
 Email: test@email.com
