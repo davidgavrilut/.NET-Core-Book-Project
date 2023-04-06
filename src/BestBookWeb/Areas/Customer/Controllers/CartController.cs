@@ -4,6 +4,8 @@ using BestBook.Models.ViewModels;
 using BestBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -99,7 +101,7 @@ public class CartController : Controller {
         }
 
         // Stripe Settings
-        var domain = "https://localhost:44380/";
+        var domain = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "/";
         var options = new SessionCreateOptions {
             LineItems = new List<SessionLineItemOptions>(),
             Mode = "payment",
